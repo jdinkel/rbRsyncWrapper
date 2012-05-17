@@ -1,0 +1,14 @@
+send_to: 'backup_admin@company.com'
+# email address for backup report
+
+send_to_name: 'Backup Operators'
+# email recipients name, doesn't really matter
+
+email_server: 'smtp.company.com'
+# email server address
+
+send_from: 'backups@company.com'
+# sender email address
+
+send_from_name: 'Backup Server'
+# email sender name
