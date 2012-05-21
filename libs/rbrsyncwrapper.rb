@@ -39,13 +39,13 @@ def create_email(params)
   # params = :name (send_to_name), :address (send_to_address), :rsync_result, 
   #          :email_server (email_server), :sender_name (send_from_name),
   #          :sender_address (send_from_address), :backup_start_time
-  #          :snapshot_result
+  #          :snapshot_result, :rsync_error, :snapshot_error
 
   email_subject = 'Disk-to-disk backup results'
 
   email_template = File.read(EMAIL_TEMPLATE_LOCATION)
   email_eruby = Erubis::FastEruby.new(email_template)
-  erb_binding = { :rsync_result => params[:rsync_result], :snapshot_result => params[:snapshot_result], :backup_time => determine_time(params[:backup_start_time]) }
+  erb_binding = { :rsync_result => params[:rsync_result], :snapshot_result => params[:snapshot_result], :backup_time => determine_time(params[:backup_start_time]), :rsync_error => params[:rsync_error], :snapshot_error => params[:snapshot_error]}
   email_markdown = Markdown.new(email_eruby.result(erb_binding))
 
   # return this object

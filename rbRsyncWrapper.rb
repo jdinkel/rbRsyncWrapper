@@ -37,10 +37,9 @@ rsyncuser1@server2.company.com::Share-Backup_Snap \
 /mnt/btr_pool/files_share_backup/ \
 --sockopts=SO_SNDBUF=4194304,SO_RCVBUF=4194304"
 
-stdin, rsync_result, stderr = Open3.popen3(rsync_command)
-rsync_result = rsync_result.read.split.join("  \n")
-
-puts rsync_result
+stdin, rsync_result, rsync_error = Open3.popen3(rsync_command)
+rsync_result = rsync_result.read.split($/).join("  #{$/}")
+rsync_error = rsync_error.read
 
 # do the snapshot
 
@@ -48,10 +47,9 @@ snapshot_command = "/sbin/btrfs subvolume snapshot \
 /mnt/btr_pool/files_share_backup /mnt/btr_pool/\
 files_share_backup-snap-#{backup_start.strftime("%Y.%m.%d-%H.%M.%S")}"
 
-stdin, snapshot_result, stderr = Open3.popen3(snapshot_command)
+stdin, snapshot_result, snapshot_error = Open3.popen3(snapshot_command)
 snapshot_result = snapshot_result.read
-
-puts snapshot_result
+snapshot_error = snapshot_error.read
 
 # Send the email
 
@@ -61,7 +59,9 @@ email_params = { :name =>              config['send_to_name'],
                  :sender_address =>    config['send_from'],
                  :sender_name =>       config['send_from_name'],
                  :rsync_result =>      rsync_result,
+                 :rsync_error =>       rsync_error,
                  :snapshot_result =>   snapshot_result,
+                 :snapshot_error =>    snapshot_error,
                  :backup_start_time => backup_start
                }
 
