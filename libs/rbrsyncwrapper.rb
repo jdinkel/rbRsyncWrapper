@@ -2,6 +2,15 @@ require 'mail'
 require 'erubis'
 require 'redcarpet/compat'
 
+def all_snaps
+  Dir.glob '/mnt/btr_pool/files02_share_backup-snap-*'
+end
+
+def oldest_snap_time
+  x = all_snaps[-1].split('-')[-2..-1].join('.').split('.')
+  Time.new(x[0], x[1], x[2], x[3], x[4], x[5])
+end
+
 def determine_time(start_time)
 
   length = Time.now - start_time
