@@ -2,12 +2,12 @@ require 'mail'
 require 'erubis'
 require 'redcarpet/compat'
 
-def all_snaps
-  Dir.glob '/mnt/btr_pool/files02_share_backup-snap-*'
+def all_snaps(location)
+  Dir.glob "#{location}-snap-*"
 end
 
-def oldest_snap_time
-  x = all_snaps[-1].split('-')[-2..-1].join('.').split('.')
+def oldest_snap_time(location)
+  x = all_snaps(location).sort[0].split('-')[-2..-1].join('.').split('.')
   Time.new(x[0].to_i, x[1].to_i, x[2].to_i, x[3].to_i, x[4].to_i, x[5].to_i)
 end
 
@@ -49,12 +49,13 @@ def create_email(params)
   #          :email_server (email_server), :sender_name (send_from_name),
   #          :sender_address (send_from_address), :backup_start_time
   #          :snapshot_result, :rsync_error, :snapshot_error
+  #          :backup_destination
 
   email_subject = 'Disk-to-disk backup results'
 
   email_template = File.read(EMAIL_TEMPLATE_LOCATION)
   email_eruby = Erubis::FastEruby.new(email_template)
-  erb_binding = { :rsync_result => params[:rsync_result], :snapshot_result => params[:snapshot_result], :backup_time => determine_time(params[:backup_start_time]), :rsync_errors => params[:rsync_error], :snapshot_errors => params[:snapshot_error], :number_backups => all_snaps.count, :oldest_backup_time => oldest_snap_time }
+  erb_binding = { :rsync_result => params[:rsync_result], :snapshot_result => params[:snapshot_result], :backup_time => determine_time(params[:backup_start_time]), :rsync_errors => params[:rsync_error], :snapshot_errors => params[:snapshot_error], :number_backups => all_snaps(params[:backup_destination]).count, :oldest_backup_time => oldest_snap_time(params[:backup_destination) }
   email_markdown = Markdown.new(email_eruby.result(erb_binding))
 
   # return this object

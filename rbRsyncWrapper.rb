@@ -22,6 +22,8 @@ rescue
   puts "Error reading the configuration file."
   exit(false)
 end
+config['backup_destination'] = config['backup_destination'][0...-1] if config['backup_destination'][-1] == '/'
+
 
 # Just making sure the password file is secure
 `chown root.adm #{password_file}`
@@ -34,7 +36,7 @@ backup_start = Time.now
 rsync_command = "/usr/bin/rsync -hrtz --inplace --no-p --no-g \
 --chmod=ugo=rwX --delete --stats --password-file=#{password_file} \
 #{config['rsync_username']}@#{config['backup_source_computer']}::\
-Share-Backup_Snap #{config['backup_destination']} \
+Share-Backup_Snap #{config['backup_destination']}/ \
 --sockopts=SO_SNDBUF=4194304,SO_RCVBUF=4194304"
 
 stdin, rsync_result, rsync_error = Open3.popen3(rsync_command)
@@ -44,8 +46,9 @@ rsync_error = rsync_error.read
 # do the snapshot
 
 snapshot_command = "/sbin/btrfs subvolume snapshot \
-/mnt/btr_pool/files_share_backup /mnt/btr_pool/\
-files_share_backup-snap-#{backup_start.strftime("%Y.%m.%d-%H.%M.%S")}"
+#{config['backup_destination']} \
+#{config['backup_destination']}-snap-\
+#{backup_start.strftime("%Y.%m.%d-%H.%M.%S")}"
 
 stdin, snapshot_result, snapshot_error = Open3.popen3(snapshot_command)
 snapshot_result = snapshot_result.read
@@ -63,6 +66,7 @@ email_params = { :name =>              config['send_to_name'],
                  :snapshot_result =>   snapshot_result,
                  :snapshot_error =>    snapshot_error,
                  :backup_start_time => backup_start
+                 :backup_destination => config['backup_destination']
                }
 
 email = create_email(email_params)
