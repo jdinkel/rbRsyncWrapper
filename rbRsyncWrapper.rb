@@ -65,7 +65,7 @@ email_params = { :name =>              config['send_to_name'],
                  :rsync_error =>       rsync_error,
                  :snapshot_result =>   snapshot_result,
                  :snapshot_error =>    snapshot_error,
-                 :backup_start_time => backup_start
+                 :backup_start_time => backup_start,
                  :backup_destination => config['backup_destination']
                }
 
