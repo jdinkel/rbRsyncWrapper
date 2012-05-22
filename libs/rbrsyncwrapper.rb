@@ -54,7 +54,7 @@ def create_email(params)
 
   email_template = File.read(EMAIL_TEMPLATE_LOCATION)
   email_eruby = Erubis::FastEruby.new(email_template)
-  erb_binding = { :rsync_result => params[:rsync_result], :snapshot_result => params[:snapshot_result], :backup_time => determine_time(params[:backup_start_time]), :rsync_error => params[:rsync_error], :snapshot_error => params[:snapshot_error]}
+  erb_binding = { :rsync_result => params[:rsync_result], :snapshot_result => params[:snapshot_result], :backup_time => determine_time(params[:backup_start_time]), :rsync_error => params[:rsync_error], :snapshot_error => params[:snapshot_error], :number_backups => all_snaps.count, oldest_backup_time => oldest_snap_time }
   email_markdown = Markdown.new(email_eruby.result(erb_binding))
 
   # return this object
