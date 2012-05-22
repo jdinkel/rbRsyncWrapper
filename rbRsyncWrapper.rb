@@ -33,8 +33,8 @@ backup_start = Time.now
 
 rsync_command = "/usr/bin/rsync -hrtz --inplace --no-p --no-g \
 --chmod=ugo=rwX --delete --stats --password-file=#{password_file} \
-rsyncuser1@server2.company.com::Share-Backup_Snap \
-/mnt/btr_pool/files_share_backup/ \
+#{config['rsync_username']}@#{config['backup_source_computer']}::\
+Share-Backup_Snap #{config['backup_destination']} \
 --sockopts=SO_SNDBUF=4194304,SO_RCVBUF=4194304"
 
 stdin, rsync_result, rsync_error = Open3.popen3(rsync_command)

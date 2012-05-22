@@ -12,3 +12,14 @@ send_from: 'backups@company.com'
 
 send_from_name: 'Backup Server'
 # email sender name
+
+rsync_username: 'rsyncuser1'
+# username for the rsync server
+# the password should be a single line of just the password, saved in the
+# config directory in a file named rsync_password.file.
+
+backup_source_computer: 'server1.company.com'
+
+backup_destination: '/mnt/btr_pool/files_share_backup/'
+# where the backup will be copied to, and snapshots taken of
+# this should be a subvolume of a btrfs volume.
